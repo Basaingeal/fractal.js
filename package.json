@@ -1,0 +1,23 @@
+{
+  "name": "fractal-canvas",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "http-server",
+    "lint": "standard ./index.js",
+    "lintfix": "standard ./index.js -- fix"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "http-server": "^0.11.1"
+  },
+  "dependencies": {
+    "file-saver": "^2.0.0",
+    "material-colors": "^1.2.6",
+    "mathjs": "^5.2.3",
+    "moment": "^2.22.2"
+  }
+}

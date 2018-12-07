@@ -1,0 +1,1 @@
+http://127.0.0.1:8080/?lineLength=2&layers=2304&cgs=12&lineWidth=1&delay=1&animated=1&dim=null&center=5&pattern=yyytyt
