@@ -3,7 +3,9 @@ import './node_modules/file-saver/src/FileSaver.js'
 
 const saveAs = window.saveAs
 
-let filteredColors = Object.entries(materialColors).slice(0, 16).reverse()
+let filteredColors = Object.entries(materialColors)
+  .slice(0, 16)
+  .reverse()
 filteredColors = [filteredColors[15], ...filteredColors.slice(0, 15)]
 
 const canvas = document.getElementById('myCanvas')
@@ -16,15 +18,22 @@ window.stopped = false
 
 const urlParams = new URLSearchParams(window.location.search)
 window.urlParams = urlParams
-const layers = Number(urlParams.get('layers')) || 128
-const lineLength = Number(urlParams.get('lineLength')) || (window.screen.height - 140) / (layers * 2)
-const lineWidth = Number(urlParams.get('lineWidth')) || lineLength / 1.61803398875
+const pattern = urlParams.get('pattern') || 'yyyyyyyy'
+const colorGroupSize =
+  Number(urlParams.get('cgs')) || getDefaultColorGroupSize()
+const layers =
+  Number(urlParams.get('layers')) || colorGroupSize * filteredColors.length
+const lineLength =
+  Number(urlParams.get('lineLength')) ||
+  (window.screen.height - 140) / (2 * layers)
+const lineWidth =
+  Number(urlParams.get('lineWidth')) || lineLength / 1.61803398875
 const delay = Number(urlParams.get('delay')) || 1
 const animated = Number(urlParams.get('animated')) || 1
 const centerSize = Number(urlParams.get('center')) || 1
-const pattern = urlParams.get('pattern') || 'yyyyyyyy'
-const colorGroupSize = Number(urlParams.get('cgs')) || getDefaultColorGroupSize()
-const dim = Number(urlParams.get('dim')) || (layers + (centerSize - 1) + colorGroupSize) * lineLength * 2
+const dim =
+  Number(urlParams.get('dim')) ||
+  (layers + (centerSize - 1) + colorGroupSize) * lineLength * 2
 const bw = Number(urlParams.get('bw')) || 0
 
 canvas.height = dim
@@ -51,10 +60,16 @@ window.labelsApp = new Vue({
         return 0
       }
       if (this.timesToDrawPoints.length < 256) {
-        return this.timesToDrawPoints.reduce((x, y) => x + y) / this.timesToDrawPoints.length
+        return (
+          this.timesToDrawPoints.reduce((x, y) => x + y) /
+          this.timesToDrawPoints.length
+        )
       }
 
-      const last256 = this.timesToDrawPoints.slice(this.timesToDrawPoints.length - 256, this.timesToDrawPoints.length)
+      const last256 = this.timesToDrawPoints.slice(
+        this.timesToDrawPoints.length - 256,
+        this.timesToDrawPoints.length
+      )
       return last256.reduce((x, y) => x + y) / last256.length
     },
     avgPointDrawDiagonals () {
@@ -62,10 +77,16 @@ window.labelsApp = new Vue({
         return 0
       }
       if (this.timesToDrawDiagonals.length < 256) {
-        return this.timesToDrawDiagonals.reduce((x, y) => x + y) / this.timesToDrawDiagonals.length
+        return (
+          this.timesToDrawDiagonals.reduce((x, y) => x + y) /
+          this.timesToDrawDiagonals.length
+        )
       }
 
-      const last256 = this.timesToDrawDiagonals.slice(this.timesToDrawDiagonals.length - 256, this.timesToDrawDiagonals.length)
+      const last256 = this.timesToDrawDiagonals.slice(
+        this.timesToDrawDiagonals.length - 256,
+        this.timesToDrawDiagonals.length
+      )
       return last256.reduce((x, y) => x + y) / last256.length
     },
     avgPointDrawStraights () {
@@ -73,10 +94,16 @@ window.labelsApp = new Vue({
         return 0
       }
       if (this.timesToDrawStraights.length < 256) {
-        return this.timesToDrawStraights.reduce((x, y) => x + y) / this.timesToDrawStraights.length
+        return (
+          this.timesToDrawStraights.reduce((x, y) => x + y) /
+          this.timesToDrawStraights.length
+        )
       }
 
-      const last256 = this.timesToDrawStraights.slice(this.timesToDrawStraights.length - 256, this.timesToDrawStraights.length)
+      const last256 = this.timesToDrawStraights.slice(
+        this.timesToDrawStraights.length - 256,
+        this.timesToDrawStraights.length
+      )
       return last256.reduce((x, y) => x + y) / last256.length
     },
     totalDuration () {
@@ -89,18 +116,41 @@ window.labelsApp = new Vue({
   filters: {
     toRuntime (value) {
       const md = moment.duration(value)
-      return `${md.hours().toString().padStart(2, '0')}:${md.minutes().toString().padStart(2, '0')}:${md.seconds().toString().padStart(2, '0')}:${md.milliseconds().toFixed(0).toString().padStart(3, '0')}`
+      return `${md
+        .hours()
+        .toString()
+        .padStart(2, '0')}:${md
+        .minutes()
+        .toString()
+        .padStart(2, '0')}:${md
+        .seconds()
+        .toString()
+        .padStart(2, '0')}:${md
+        .milliseconds()
+        .toFixed(0)
+        .toString()
+        .padStart(3, '0')}`
       // return md.humanize()
     }
   },
   methods: {
     moveToCenter () {
-      window.scrollTo(canvas.width / 2 + 16 - window.screen.width / 2, canvas.height / 2 + 16 - window.screen.height / 2)
+      window.scrollTo(
+        canvas.width / 2 + 16 - window.screen.width / 2,
+        canvas.height / 2 + 16 - window.screen.height / 2
+      )
     },
     download () {
       canvas.toBlob(blob => {
-        const humanDuration = moment.duration(this.now - this.timeStartAll).humanize()
-        saveAs(blob, `Fractal - ${this.currentLayer} Layers - ${canvas.width}x${canvas.height} - ${humanDuration}.png`)
+        const humanDuration = moment
+          .duration(this.now - this.timeStartAll)
+          .humanize()
+        saveAs(
+          blob,
+          `Fractal - ${this.currentLayer} Layers - ${canvas.width}x${
+            canvas.height
+          } - ${humanDuration}.png`
+        )
       })
     },
     stop () {
@@ -144,34 +194,32 @@ const centerPoint = {
 let allPoints = [centerPoint]
 let allChuncks = []
 window.allChuncks = allChuncks
-let diagonalChunks = []
-window.diagonalChunks = diagonalChunks
-let allDiagonalPoints = []
 let alivePoints = []
-let pointsToDrawTo = [{
-  x: centerPoint.x,
-  y: centerPoint.y - lineLength * centerSize,
-  direction: directions.north,
-  alive: true
-},
-{
-  x: centerPoint.x + lineLength * centerSize,
-  y: centerPoint.y,
-  direction: directions.east,
-  alive: true
-},
-{
-  x: centerPoint.x,
-  y: centerPoint.y + lineLength * centerSize,
-  direction: directions.south,
-  alive: true
-},
-{
-  x: centerPoint.x - lineLength * centerSize,
-  y: centerPoint.y,
-  direction: directions.west,
-  alive: true
-}
+let pointsToDrawTo = [
+  {
+    x: centerPoint.x,
+    y: centerPoint.y - lineLength * centerSize,
+    direction: directions.north,
+    alive: true
+  },
+  {
+    x: centerPoint.x + lineLength * centerSize,
+    y: centerPoint.y,
+    direction: directions.east,
+    alive: true
+  },
+  {
+    x: centerPoint.x,
+    y: centerPoint.y + lineLength * centerSize,
+    direction: directions.south,
+    alive: true
+  },
+  {
+    x: centerPoint.x - lineLength * centerSize,
+    y: centerPoint.y,
+    direction: directions.west,
+    alive: true
+  }
 ]
 
 for (let point of pointsToDrawTo) {
@@ -189,7 +237,7 @@ for (let point of pointsToDrawTo) {
 
 pointsToDrawTo = []
 
-const startDrawLoop = async (layers) => {
+const startDrawLoop = async layers => {
   for (let i = 1; i < layers; i++) {
     if (window.stopped) {
       break
@@ -207,8 +255,8 @@ const startDrawLoop = async (layers) => {
       for (let direction of directionsToDraw) {
         if (detectDiagonalCollision(point, direction)) {
           pointsToDrawTo.push({
-            x: point.x + vectors[direction][0] * lineLength / 2,
-            y: point.y + vectors[direction][1] * lineLength / 2,
+            x: point.x + (vectors[direction][0] * lineLength) / 2,
+            y: point.y + (vectors[direction][1] * lineLength) / 2,
             direction: direction,
             alive: false
           })
@@ -239,11 +287,6 @@ const startDrawLoop = async (layers) => {
         initalizeAllChunk(chunkColumn, chunkRow)
         allChuncks[chunkColumn][chunkRow].push(pointToDrawTo)
 
-        if (pointToDrawTo.direction % 2 === 1) {
-          allDiagonalPoints.push(pointToDrawTo)
-          initalizeDiagonalChunck(chunkColumn, chunkRow)
-          diagonalChunks[chunkColumn][chunkRow].push(pointToDrawTo)
-        }
         window.labelsApp.totalPoints = allPoints.length
         if (animated === 2) {
           await sleep(delay)
@@ -277,8 +320,14 @@ function detectDiagonalCollision (point, directionToDraw) {
 
   // let pointDirectionToCheck1 = [(directionToDraw + 1) % 8, (directionToDraw - 2) % 8]
   // let pointDirectionToCheck2 = [(directionToDraw - 1) % 8, (directionToDraw + 2) % 8]
-  let pointDirectionToCheck1 = [(directionToDraw + 1) % 8, (directionToDraw + 2) % 8]
-  let pointDirectionToCheck2 = [(directionToDraw - 1 + 8) % 8, (directionToDraw - 2 + 8) % 8]
+  let pointDirectionToCheck1 = [
+    (directionToDraw + 1) % 8,
+    (directionToDraw + 2) % 8
+  ]
+  let pointDirectionToCheck2 = [
+    (directionToDraw - 1 + 8) % 8,
+    (directionToDraw - 2 + 8) % 8
+  ]
 
   const diagonalChunkColumn = getPointColumn(point)
   const diagonalChunkRow = getPointRow(point)
@@ -286,17 +335,20 @@ function detectDiagonalCollision (point, directionToDraw) {
 
   for (let i = diagonalChunkColumn - 1; i <= diagonalChunkColumn + 1; i++) {
     for (let j = diagonalChunkRow - 1; j <= diagonalChunkRow + 1; j++) {
-      initalizeDiagonalChunck(i, j)
-      pointsToCheck = pointsToCheck.concat(diagonalChunks[i][j])
+      initalizeAllChunk(i, j)
+      pointsToCheck = pointsToCheck.concat(allChuncks[i][j])
     }
   }
 
-  let potentialCollision = pointsToCheck.find(p => (p.x === point.x + vectors[pointDirectionToCheck1[0]][0] * lineLength &&
-      p.y === point.y + vectors[pointDirectionToCheck1[0]][1] * lineLength &&
-      p.direction === pointDirectionToCheck1[1]) ||
-    (p.x === point.x + vectors[pointDirectionToCheck2[0]][0] * lineLength &&
-      p.y === point.y + vectors[pointDirectionToCheck2[0]][1] * lineLength &&
-      p.direction === pointDirectionToCheck2[1]))
+  let potentialCollision = pointsToCheck.find(
+    p =>
+      (p.x === point.x + vectors[pointDirectionToCheck1[0]][0] * lineLength &&
+        p.y === point.y + vectors[pointDirectionToCheck1[0]][1] * lineLength &&
+        p.direction === pointDirectionToCheck1[1]) ||
+      (p.x === point.x + vectors[pointDirectionToCheck2[0]][0] * lineLength &&
+        p.y === point.y + vectors[pointDirectionToCheck2[0]][1] * lineLength &&
+        p.direction === pointDirectionToCheck2[1])
+  )
 
   if (potentialCollision) {
     return true
@@ -314,18 +366,9 @@ function getColorForLayer (layerIndex) {
   if (layerIndex > 0 && pattern[0].toUpperCase() === 'T') {
     layerIndex--
   }
-  const localIndex = (layerIndex) % (colorGroupSize * filteredColors.length)
+  const localIndex = layerIndex % (colorGroupSize * filteredColors.length)
   let colorIndex = Math.floor(localIndex / colorGroupSize)
   return filteredColors[colorIndex][1][500]
-}
-
-function initalizeDiagonalChunck (column, row) {
-  if (diagonalChunks[column] == null) {
-    diagonalChunks[column] = []
-  }
-  if (diagonalChunks[column][row] == null) {
-    diagonalChunks[column][row] = []
-  }
 }
 
 function initalizeAllChunk (column, row) {
@@ -361,11 +404,17 @@ function checkForCollisions (point) {
 }
 
 function getPointColumn (point) {
-  return Math.floor(point.x / (8 * lineLength)) + (Math.ceil(canvas.width / (8 * lineLength)) * 3)
+  return (
+    Math.floor(point.x / (8 * lineLength)) +
+    Math.ceil(canvas.width / (8 * lineLength)) * 3
+  )
 }
 
 function getPointRow (point) {
-  return Math.floor(point.y / (8 * lineLength)) + (Math.ceil(canvas.height / (8 * lineLength)) * 3)
+  return (
+    Math.floor(point.y / (8 * lineLength)) +
+    Math.ceil(canvas.height / (8 * lineLength)) * 3
+  )
 }
 
 function getDirectionsToDraw (point, branchStyle) {
@@ -453,12 +502,12 @@ function getBranchStyle (layerNumber) {
   // if (pattern[0].toUpperCase === 'T') {
   //   layerNumber++
   // }
-  return pattern[(layerNumber) % pattern.length]
+  return pattern[layerNumber % pattern.length]
 }
 
 function getDefaultColorGroupSize () {
   const numOfT = (pattern.toUpperCase().match(/T/g) || []).length
   const numOfY = (pattern.toUpperCase().match(/Y/g) || []).length
 
-  return (numOfT + numOfY) * (numOfY % 2 + 1)
+  return (numOfT + numOfY) * ((numOfY % 2) + 1)
 }
