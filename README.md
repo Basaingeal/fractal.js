@@ -43,5 +43,5 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 ## Relevant Links
 [Terrific Toothpick Patterns](https://www.youtube.com/watch?v=_UtCli1SgjI&t=344s) - A Numberphile episode going into the fractal pattern at play.
 
-[Toothpick Simulator](https://www.youtube.com/redirect?q=http%3A%2F%2Foeis.org%2FA139250%2Fa139250.anim.html&redir_token=kOJ6hywNm7IywYb4tShxYnM0FLd8MTU1MjA1NTA1NkAxNTUxOTY4NjU2&v=_UtCli1SgjI&event=video_description) - A similar site with more robust pattern manipulation
+[Toothpick Simulator](http://oeis.org/A139250/a139250.anim.html) - A similar site with more robust pattern manipulation
 
